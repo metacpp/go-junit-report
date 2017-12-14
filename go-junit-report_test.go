@@ -9,7 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jstemmer/go-junit-report/parser"
+	"github.com/metacpp/go-junit-report/formatter"
+	"github.com/metacpp/go-junit-report/parser"
 )
 
 type TestCase struct {
@@ -823,7 +824,7 @@ func testJUnitFormatter(t *testing.T, goVersion string) {
 
 		var junitReport bytes.Buffer
 
-		if err = JUnitReportXML(testCase.report, testCase.noXMLHeader, goVersion, &junitReport); err != nil {
+		if err = formatter.JUnitReportXML(testCase.report, testCase.noXMLHeader, goVersion, &junitReport); err != nil {
 			t.Fatal(err)
 		}
 

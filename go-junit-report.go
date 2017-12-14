@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jstemmer/go-junit-report/parser"
+	"github.com/metacpp/go-junit-report/parser"
+	"github.com/metacpp/go-junit-report/formatter"
 )
 
 var (
@@ -33,7 +34,7 @@ func main() {
 	}
 
 	// Write xml
-	err = JUnitReportXML(report, noXMLHeader, goVersionFlag, os.Stdout)
+	err = formatter.JUnitReportXML(report, noXMLHeader, goVersionFlag, os.Stdout)
 	if err != nil {
 		fmt.Printf("Error writing XML: %s\n", err)
 		os.Exit(1)
