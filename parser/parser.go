@@ -154,6 +154,7 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 				test.Result = FAIL
 			}
 			test.Output = buffer
+			buffer = buffer[0:0]
 
 			test.Name = matches[2]
 			testTime := parseTime(matches[3]) * 10
