@@ -120,9 +120,8 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 				tests = append(tests, &Test{
 					Name:   "Failure",
 					Result: FAIL,
-					Output: buffer,
+					Output: append(make([]string, len(buffer), cap(buffer)), buffer...),
 				})
-				buffer = buffer[0:0]
 			}
 
 			// all tests in this package are finished
@@ -153,7 +152,7 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 			} else {
 				test.Result = FAIL
 			}
-			test.Output = buffer
+			test.Output = append(test.Output, buffer...)
 			buffer = buffer[0:0]
 
 			test.Name = matches[2]
