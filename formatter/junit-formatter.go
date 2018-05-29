@@ -31,12 +31,14 @@ type JUnitTestSuite struct {
 
 // JUnitTestCase is a single test case with its result.
 type JUnitTestCase struct {
-	XMLName     xml.Name          `xml:"testcase"`
-	Classname   string            `xml:"classname,attr"`
-	Name        string            `xml:"name,attr"`
-	Time        string            `xml:"time,attr"`
-	SkipMessage *JUnitSkipMessage `xml:"skipped,omitempty"`
-	Failure     *JUnitFailure     `xml:"failure,omitempty"`
+	XMLName      xml.Name          `xml:"testcase"`
+	Classname    string            `xml:"classname,attr"`
+	Name         string            `xml:"name,attr"`
+	TotalTime    string            `xml:"time,attr"`
+	CreationTime string            `xml:"creationtime,attr"`
+	DestroyTime  string            `xml:"destroytime,attr"`
+	SkipMessage  *JUnitSkipMessage `xml:"skipped,omitempty"`
+	Failure      *JUnitFailure     `xml:"failure,omitempty"`
 }
 
 // JUnitSkipMessage contains the reason why a testcase was skipped.
@@ -91,10 +93,12 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 		// individual test cases
 		for _, test := range pkg.Tests {
 			testCase := JUnitTestCase{
-				Classname: classname,
-				Name:      test.Name,
-				Time:      formatTime(test.Time),
-				Failure:   nil,
+				Classname:    classname,
+				Name:         test.Name,
+				TotalTime:    formatTime(test.Time),
+				CreationTime: formatTime(test.CreationTime),
+				DestroyTime:  formatTime(test.DestroyTime),
+				Failure:      nil,
 			}
 
 			if test.Result == parser.FAIL {
@@ -135,6 +139,6 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 	return nil
 }
 
-func formatTime(time int) string {
-	return fmt.Sprintf("%.3f", float64(time)/1000.0)
+func formatTime(time float64) string {
+	return fmt.Sprintf("%.3f", float64(time))
 }

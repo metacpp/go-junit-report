@@ -2,10 +2,12 @@ package parser
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Result represents a test result.
@@ -26,25 +28,30 @@ type Report struct {
 // Package contains the test results of a single package.
 type Package struct {
 	Name        string
-	Time        int
+	Time        float64
 	Tests       []*Test
 	CoveragePct string
 }
 
 // Test contains the results of a single test.
 type Test struct {
-	Name   string
-	Time   int
-	Result Result
-	Output []string
+	Name         string
+	Time         float64
+	CreationTime float64
+	DestroyTime  float64
+	Result       Result
+	Output       []string
 }
 
 var (
-	regexStatus   = regexp.MustCompile(`^\s*--- (PASS|FAIL|SKIP): (.+) \((\d+\.\d+)(?: seconds|s)\)$`)
-	regexCoverage = regexp.MustCompile(`^coverage:\s+(\d+\.\d+)%\s+of\s+statements(?:\sin\s.+)?$`)
-	regexResult   = regexp.MustCompile(`^(ok|FAIL)\s+([^ ]+)\s+(?:(\d+\.\d+)s|(\[\w+ failed]))(?:\s+coverage:\s+(\d+\.\d+)%\sof\sstatements(?:\sin\s.+)?)?$`)
-	regexOutput   = regexp.MustCompile(`(    )*\t(.*)`)
-	regexSummary  = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
+	regexStatus        = regexp.MustCompile(`^\s*--- (PASS|FAIL|SKIP): (.+) \((\d+\.\d+)(?: seconds|s)\)$`)
+	regexCoverage      = regexp.MustCompile(`^coverage:\s+(\d+\.\d+)%\s+of\s+statements(?:\sin\s.+)?$`)
+	regexResult        = regexp.MustCompile(`^(ok|FAIL)\s+([^ ]+)\s+(?:(\d+\.\d+)s|(\[\w+ failed]))(?:\s+coverage:\s+(\d+\.\d+)%\sof\sstatements(?:\sin\s.+)?)?$`)
+	regexOutput        = regexp.MustCompile(`(    )*\t(.*)`)
+	regexSummary       = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
+	regexTimeFormat    = regexp.MustCompile(`(\d{4})/(\d{2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})`)
+	regexCreationStart = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[INFO\]\sTest:\sUsing\s([\w-]+)\sas\stest\sregion$`)
+	regexDestroyStart  = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[WARN\]\s(Test:\sExecuting\sdestroy\sstep)$`)
 )
 
 // Parse parses go test output from reader r and returns a report with the
@@ -59,10 +66,16 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 	var tests []*Test
 
 	// sum of tests' time, use this if current test has no result line (when it is compiled test)
-	testsTime := 0
+	testsTime := 0.0
 
 	// current test
 	var cur string
+
+	// Creation start time of each test case.©
+	var creationStartTime time.Time
+
+	// Destroy start time of each test case.
+	var destroyStartTime time.Time
 
 	// keep track if we've already seen a summary for the current test
 	var seenSummary bool
@@ -102,6 +115,10 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 			// clear the current build package, so output lines won't be added to that build
 			capturedPackage = ""
 			seenSummary = false
+		} else if matches := regexCreationStart.FindStringSubmatch(line); len(matches) == 3 {
+			creationStartTime, _ = time.Parse(time.RFC3339, convertToRFC3339(matches[1]))
+		} else if matches := regexDestroyStart.FindStringSubmatch(line); len(matches) == 3 {
+			destroyStartTime, _ = time.Parse(time.RFC3339, convertToRFC3339(matches[1]))
 		} else if matches := regexResult.FindStringSubmatch(line); len(matches) == 6 {
 			if matches[5] != "" {
 				coveragePct = matches[5]
@@ -156,9 +173,14 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 			buffer = buffer[0:0]
 
 			test.Name = matches[2]
-			testTime := parseTime(matches[3]) * 10
+			// in ms.
+			testTime := parseTime(matches[3])
 			test.Time = testTime
 			testsTime += testTime
+
+			// Caculate creation and destroy time roughly.
+			test.CreationTime = destroyStartTime.Sub(creationStartTime).Seconds()
+			test.DestroyTime = test.Time - test.CreationTime
 		} else if matches := regexCoverage.FindStringSubmatch(line); len(matches) == 2 {
 			coveragePct = matches[1]
 		} else if matches := regexOutput.FindStringSubmatch(line); capturedPackage == "" && len(matches) == 3 {
@@ -198,12 +220,22 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 	return report, nil
 }
 
-func parseTime(time string) int {
-	t, err := strconv.Atoi(strings.Replace(time, ".", "", -1))
-	if err != nil {
-		return 0
-	}
+func parseTime(time string) float64 {
+	var t float64
+	t, _ = strconv.ParseFloat(time, 64)
+
 	return t
+}
+
+func convertToRFC3339(time string) string {
+	var rfc3339Str = time
+	if matches := regexTimeFormat.FindStringSubmatch(time); len(matches) == 7 {
+		rfc3339Str = fmt.Sprintf("%v-%v-%vT%v:%v:%v+08:00",
+			matches[1], matches[2], matches[3],
+			matches[4], matches[5], matches[6])
+	}
+
+	return rfc3339Str
 }
 
 func findTest(tests []*Test, name string) *Test {
