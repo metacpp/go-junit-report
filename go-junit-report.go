@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/metacpp/go-junit-report/parser"
-	"github.com/metacpp/go-junit-report/formatter"
+	"github.com/jeffreyCline/go-junit-report/formatter"
+	"github.com/jeffreyCline/go-junit-report/parser"
 )
 
 var (
