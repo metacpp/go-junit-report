@@ -87,7 +87,7 @@ var (
 )
 
 // Console write debug output
-var Console console = true
+var Console console // = true
 
 // Parse parses go test output from reader r and returns a report with the
 // results. An optional pkgName can be given, which is used in case a package
