@@ -23,8 +23,8 @@ const (
 // ACTION Represents what action is being performed during the test step
 type ACTION int
 
-// Debug control the flow of debug messages
-type Debug bool
+// console control the flow of debug messages
+type console bool
 
 // What the test step is doing
 const (
@@ -86,7 +86,8 @@ var (
 	regexIsGraphTypeDestroy      = regexp.MustCompile(`^(\d{4})/(\d{2})/(\d{2}).(\d{2}):(\d{2}):(\d{2}).(\SINFO\S).(terraform:.building.graph:.GraphTypePlanDestroy)`)
 )
 
-var dbg Debug //= true
+// Console write debug output
+var Console console = true
 
 // Parse parses go test output from reader r and returns a report with the
 // results. An optional pkgName can be given, which is used in case a package
@@ -401,40 +402,40 @@ func processCreateDestroySections(test *Test) *Test {
 		}
 	}
 
-	dbg.Println("------------------------------------------------")
-	dbg.Println("")
-	dbg.Printf("TEST             : %s\n", test.Name)
-	dbg.Printf("Time             : %v\n", time.Duration(test.Time)*time.Second)
-	dbg.Printf("CreateTime       : %v\n", time.Duration(test.CreateTime))
+	Console.WriteLine("------------------------------------------------")
+	Console.WriteLine("")
+	Console.Write("TEST             : %s\n", test.Name)
+	Console.Write("Time             : %v\n", time.Duration(test.Time)*time.Second)
+	Console.Write("CreateTime       : %v\n", time.Duration(test.CreateTime))
 
 	if len(test.CleanUp) > 0 {
-		dbg.Printf("DestroyTime      : %v\n", time.Duration(test.CleanUp[0].Duration))
+		Console.Write("DestroyTime      : %v\n", time.Duration(test.CleanUp[0].Duration))
 	} else {
-		dbg.Println("DestroyTime      : 0.0")
+		Console.WriteLine("DestroyTime      : 0.0")
 	}
 
-	dbg.Printf("CreateDestroyTime: %v\n", time.Duration(test.CreateDestroyTime))
-	dbg.Printf("Overhead         : %v\n", time.Duration(test.TestOverhead))
-	dbg.Println("")
-	dbg.Println("  CREATE STEP:")
+	Console.Write("CreateDestroyTime: %v\n", time.Duration(test.CreateDestroyTime))
+	Console.Write("Overhead         : %v\n", time.Duration(test.TestOverhead))
+	Console.WriteLine("")
+	Console.WriteLine("  CREATE STEP:")
 
 	for _, cur := range test.Steps {
 
-		dbg.Printf("    TestStep      : %v\n", cur.Action)
-		dbg.Printf("    TestStep      : %v\n", cur.ResourceName)
-		dbg.Printf("    TestStep      : %v\n\n", fmt.Sprintf("%.3f", float64(cur.Duration/float64(time.Second))))
+		Console.Write("    TestStep      : %v\n", cur.Action)
+		Console.Write("    TestStep      : %v\n", cur.ResourceName)
+		Console.Write("    TestStep      : %v\n\n", fmt.Sprintf("%.3f", float64(cur.Duration/float64(time.Second))))
 	}
 
-	dbg.Println("  DESTROY STEP:")
+	Console.WriteLine("  DESTROY STEP:")
 
 	if len(test.CleanUp) > 0 {
-		dbg.Printf("    DestroyStep   : %v\n", test.CleanUp[0].Action)
-		dbg.Printf("    DestroyStep   : %v\n", test.CleanUp[0].ResourceName)
-		dbg.Printf("    DestroyStep   : %v\n", fmt.Sprintf("%.3f", float64(test.CleanUp[0].Duration/float64(time.Second))))
+		Console.Write("    DestroyStep   : %v\n", test.CleanUp[0].Action)
+		Console.Write("    DestroyStep   : %v\n", test.CleanUp[0].ResourceName)
+		Console.Write("    DestroyStep   : %v\n", fmt.Sprintf("%.3f", float64(test.CleanUp[0].Duration/float64(time.Second))))
 	} else {
-		dbg.Println("    DestroyStep   : N/A")
+		Console.WriteLine("    DestroyStep   : N/A")
 	}
-	dbg.Println("")
+	Console.WriteLine("")
 
 	return test
 }
@@ -537,16 +538,16 @@ func (action ACTION) String() string {
 	return actions[action]
 }
 
-// Printf control the flow of output messages
-func (d Debug) Printf(s string, a ...interface{}) {
-	if d {
+// Write control the flow of output messages
+func (c console) Write(s string, a ...interface{}) {
+	if c {
 		fmt.Printf(s, a...)
 	}
 }
 
-// Println control the flow of output messages
-func (d Debug) Println(s string) {
-	if d {
+// WriteLine control the flow of output messages
+func (c console) WriteLine(s string) {
+	if c {
 		fmt.Println(s)
 	}
 }
