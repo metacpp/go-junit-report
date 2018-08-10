@@ -7,6 +7,7 @@ import (
 	"io"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/metacpp/go-junit-report/parser"
 )
@@ -31,14 +32,15 @@ type JUnitTestSuite struct {
 
 // JUnitTestCase is a single test case with its result.
 type JUnitTestCase struct {
-	XMLName      xml.Name          `xml:"testcase"`
-	Classname    string            `xml:"classname,attr"`
-	Name         string            `xml:"name,attr"`
-	TotalTime    string            `xml:"time,attr"`
-	CreationTime string            `xml:"creationtime,attr"`
-	DestroyTime  string            `xml:"destroytime,attr"`
-	SkipMessage  *JUnitSkipMessage `xml:"skipped,omitempty"`
-	Failure      *JUnitFailure     `xml:"failure,omitempty"`
+	XMLName        xml.Name          `xml:"testcase"`
+	Classname      string            `xml:"classname,attr"`
+	Name           string            `xml:"name,attr"`
+	TotalTime      string            `xml:"time,attr"`
+	CreationTime   string            `xml:"creationtime,attr"`
+	DestroyTime    string            `xml:"destroytime,attr"`
+	ValidationTime string            `xml:"validationtime,attr"`
+	SkipMessage    *JUnitSkipMessage `xml:"skipped,omitempty"`
+	Failure        *JUnitFailure     `xml:"failure,omitempty"`
 }
 
 // JUnitSkipMessage contains the reason why a testcase was skipped.
@@ -93,12 +95,13 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 		// individual test cases
 		for _, test := range pkg.Tests {
 			testCase := JUnitTestCase{
-				Classname:    classname,
-				Name:         test.Name,
-				TotalTime:    formatTime(test.Time),
-				CreationTime: formatTime(test.CreationTime),
-				DestroyTime:  formatTime(test.DestroyTime),
-				Failure:      nil,
+				Classname:      classname,
+				Name:           test.Name,
+				TotalTime:      formatTime(test.Time),
+				CreationTime:   formatTime(0),
+				DestroyTime:    formatTime(0),
+				ValidationTime: formatTime(0),
+				Failure:        nil,
 			}
 
 			if test.Result == parser.FAIL {
@@ -112,6 +115,16 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 
 			if test.Result == parser.SKIP {
 				testCase.SkipMessage = &JUnitSkipMessage{strings.Join(test.Output, "\n")}
+			}
+
+			if test.Result == parser.PASS {
+				testCase.CreationTime = formatTime(test.CreateTime / float64(time.Second))
+
+				if len(test.CleanUp) > 0 {
+					testCase.DestroyTime = formatTime(float64(test.CleanUp[0].Duration) / float64(time.Second))
+				}
+
+				testCase.ValidationTime = formatTime(test.TestOverhead / float64(time.Second))
 			}
 
 			ts.TestCases = append(ts.TestCases, testCase)

@@ -20,6 +20,27 @@ const (
 	SKIP
 )
 
+// ACTION Represents what action is being performed during the test step
+type ACTION int
+
+// Debug control the flow of debug messages
+type Debug bool
+
+// What the test step is doing
+const (
+	UNKNOWN ACTION = 0
+	CREATE  ACTION = 1
+	UPDATE  ACTION = 2
+	DESTROY ACTION = 3
+)
+
+// ResourceTime Contains the result if individual actions per resource
+type ResourceTime struct {
+	ResourceName string
+	Duration     float64
+	Action       []ACTION
+}
+
 // Report is a collection of package tests.
 type Report struct {
 	Packages []Package
@@ -35,12 +56,17 @@ type Package struct {
 
 // Test contains the results of a single test.
 type Test struct {
-	Name         string
-	Time         float64
-	CreationTime float64
-	DestroyTime  float64
-	Result       Result
-	Output       []string
+	Name              string
+	Time              float64
+	TestOverhead      float64
+	CreateTime        float64
+	CreateDestroyTime float64
+	Result            Result
+	Output            []string
+	CreateText        []string
+	DestroyText       []string
+	Steps             []ResourceTime
+	CleanUp           []ResourceTime
 }
 
 var (
@@ -51,8 +77,16 @@ var (
 	regexSummary       = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
 	regexTimeFormat    = regexp.MustCompile(`(\d{4})/(\d{2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})`)
 	regexCreationStart = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[INFO\]\sTest:\sUsing\s([\w-]+)\sas\stest\sregion$`)
-	regexDestroyStart  = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[WARN\]\s(Test:\sExecuting\sdestroy\sstep)$`)
+
+	regexDestroyStart            = regexp.MustCompile(`^\d{4}/\d{2}/\d{2}.\d{2}:\d{2}:\d{2}.\SWARN\S.Test:.Executing.destroy.step`)
+	regexIsDiff                  = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}).(\d{2}:\d{2}:\d{2}).(\SWARN\S).(Test: Step plan: DIFF:)`)
+	regexIsCreateUpdateOrDestroy = regexp.MustCompile(`^(CREATE|UPDATE|DESTROY):.(.*)`)
+	regexIsGraphTypeApply        = regexp.MustCompile(`^(\d{4})/(\d{2})/(\d{2}).(\d{2}):(\d{2}):(\d{2}).(\SINFO\S).(terraform:.building.graph:.GraphTypeApply)`)
+	regexIsGraphTypePlan         = regexp.MustCompile(`^(\d{4})/(\d{2})/(\d{2}).(\d{2}):(\d{2}):(\d{2}).(\SINFO\S).(terraform:.building.graph:.GraphTypePlan)`)
+	regexIsGraphTypeDestroy      = regexp.MustCompile(`^(\d{4})/(\d{2})/(\d{2}).(\d{2}):(\d{2}):(\d{2}).(\SINFO\S).(terraform:.building.graph:.GraphTypePlanDestroy)`)
 )
+
+var dbg Debug //= true
 
 // Parse parses go test output from reader r and returns a report with the
 // results. An optional pkgName can be given, which is used in case a package
@@ -71,12 +105,6 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 	// current test
 	var cur string
 
-	// Creation start time of each test case.©
-	var creationStartTime time.Time
-
-	// Destroy start time of each test case.
-	var destroyStartTime time.Time
-
 	// keep track if we've already seen a summary for the current test
 	var seenSummary bool
 
@@ -92,6 +120,12 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 	// capture any non-test output
 	var buffer []string
 
+	// used to track which section of the test case is in
+	var isCreate = false
+
+	// used to simulate a continue
+	var skipCheck bool
+
 	// parse lines
 	for {
 		l, _, err := reader.ReadLine()
@@ -101,24 +135,30 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 			return nil, err
 		}
 
+		skipCheck = false
 		line := string(l)
 
 		if strings.HasPrefix(line, "=== RUN ") {
 			// new test
 			cur = strings.TrimSpace(line[8:])
 			tests = append(tests, &Test{
-				Name:   cur,
-				Result: FAIL,
-				Output: make([]string, 0),
+				Name:              cur,
+				Result:            FAIL,
+				Time:              0.0,
+				TestOverhead:      0.0,
+				CreateTime:        0.0,
+				CreateDestroyTime: 0.0,
+				Output:            make([]string, 0),
+				CreateText:        make([]string, 0),
+				DestroyText:       make([]string, 0),
+				Steps:             make([]ResourceTime, 0),
+				CleanUp:           make([]ResourceTime, 0),
 			})
 
 			// clear the current build package, so output lines won't be added to that build
 			capturedPackage = ""
+			isCreate = true
 			seenSummary = false
-		} else if matches := regexCreationStart.FindStringSubmatch(line); len(matches) == 3 {
-			creationStartTime, _ = time.Parse(time.RFC3339, convertToRFC3339(matches[1]))
-		} else if matches := regexDestroyStart.FindStringSubmatch(line); len(matches) == 3 {
-			destroyStartTime, _ = time.Parse(time.RFC3339, convertToRFC3339(matches[1]))
 		} else if matches := regexResult.FindStringSubmatch(line); len(matches) == 6 {
 			if matches[5] != "" {
 				coveragePct = matches[5]
@@ -157,67 +197,287 @@ func Parse(r io.Reader, pkgName string) (*Report, error) {
 		} else if matches := regexStatus.FindStringSubmatch(line); len(matches) == 4 {
 			cur = matches[2]
 			test := findTest(tests, cur)
-			if test == nil {
-				continue
+			if test != nil {
+				skipCheck = true
+
+				// test status
+				if matches[1] == "PASS" {
+					test.Result = PASS
+				} else if matches[1] == "SKIP" {
+					test.Result = SKIP
+					clearCreateDestroyText(test)
+				} else {
+					test.Result = FAIL
+					clearCreateDestroyText(test)
+				}
+
+				test.Output = append(test.Output, buffer...)
+				buffer = buffer[0:0]
+
+				test.Name = matches[2]
+
+				// in ms.
+				testTime := parseTime(matches[3])
+				test.Time = testTime
+
+				if test.Result == PASS {
+					test = processCreateDestroySections(test)
+				}
+
+				testsTime += testTime
 			}
-
-			// test status
-			if matches[1] == "PASS" {
-				test.Result = PASS
-			} else if matches[1] == "SKIP" {
-				test.Result = SKIP
-			} else {
-				test.Result = FAIL
-			}
-			test.Output = append(test.Output, buffer...)
-			buffer = buffer[0:0]
-
-			test.Name = matches[2]
-			// in ms.
-			testTime := parseTime(matches[3])
-			test.Time = testTime
-			testsTime += testTime
-
-			// Caculate creation and destroy time roughly.
-			test.CreationTime = destroyStartTime.Sub(creationStartTime).Seconds()
-			test.DestroyTime = test.Time - test.CreationTime
-		} else if matches := regexCoverage.FindStringSubmatch(line); len(matches) == 2 {
+		} else if matches := regexCoverage.FindStringSubmatch(line); len(matches) == 2 && !skipCheck {
 			coveragePct = matches[1]
-		} else if matches := regexOutput.FindStringSubmatch(line); capturedPackage == "" && len(matches) == 3 {
+		} else if matches := regexOutput.FindStringSubmatch(line); capturedPackage == "" && len(matches) == 3 && !skipCheck {
 			// Sub-tests start with one or more series of 4-space indents, followed by a hard tab,
 			// followed by the test output
 			// Top-level tests start with a hard tab.
 			test := findTest(tests, cur)
-			if test == nil {
-				continue
+			if test != nil {
+				skipCheck = true
+				test.Output = append(test.Output, matches[2])
 			}
-			test.Output = append(test.Output, matches[2])
-		} else if strings.HasPrefix(line, "# ") {
+		} else if strings.HasPrefix(line, "# ") && !skipCheck {
 			// indicates a capture of build output of a package. set the current build package.
 			capturedPackage = line[2:]
-		} else if capturedPackage != "" {
+		} else if capturedPackage != "" && !skipCheck {
 			// current line is build failure capture for the current built package
 			packageCaptures[capturedPackage] = append(packageCaptures[capturedPackage], line)
-		} else if regexSummary.MatchString(line) {
+		} else if regexSummary.MatchString(line) && !skipCheck {
 			// don't store any output after the summary
 			seenSummary = true
-		} else if !seenSummary {
+		} else if !seenSummary && !skipCheck {
 			// buffer anything else that we didn't recognize
 			buffer = append(buffer, line)
 		}
+
+		// Split the test output into Create and Destroy sections
+		test := findTest(tests, cur)
+		if test == nil {
+			continue
+		}
+
+		if matches := regexDestroyStart.FindAllString(line, -1); len(matches) > 0 {
+			// We are now in the destroy section of the test pass
+			isCreate = false
+			test.DestroyText = append(test.DestroyText, line)
+			//fmt.Println("Found Destroy Text: Set isCreate to False.")
+		} else if isCreate == true {
+			// add the log line to the CreateText array
+			test.CreateText = append(test.CreateText, line)
+			//fmt.Printf("Create : %v\n", test.CreateText)
+		} else if isCreate == false {
+			test.DestroyText = append(test.DestroyText, line)
+			//fmt.Printf("Destroy: %v\n", test.DestroyText)
+		}
 	}
 
-	if len(tests) > 0 {
-		// no result line found
-		report.Packages = append(report.Packages, Package{
-			Name:        pkgName,
-			Time:        testsTime,
-			Tests:       tests,
-			CoveragePct: coveragePct,
-		})
-	}
+	// no result line found
+	report.Packages = append(report.Packages, Package{
+		Name:        pkgName,
+		Time:        testsTime,
+		Tests:       tests,
+		CoveragePct: coveragePct,
+	})
 
 	return report, nil
+}
+
+func processCreateDestroySections(test *Test) *Test {
+
+	var rt ResourceTime
+	linesProcessed := 0
+	var totalTestTime float64
+
+	for txtIndex, createText := range test.CreateText {
+		if linesProcessed == len(test.CreateText)-1 {
+			break
+		}
+
+		//check to see if it is the DIFF line
+		if matches := regexIsDiff.FindStringSubmatch(createText); len(matches) > 0 {
+
+			// We found the diff line, now start looking for Create|Update|Destroy
+			for i := txtIndex; i < len(test.CreateText); i++ {
+				linesProcessed = i
+
+				if matches := regexIsCreateUpdateOrDestroy.FindStringSubmatch(test.CreateText[i]); len(matches) > 0 {
+
+					// Now I need to see if this Resource time already has an action of this type
+					// already in the data structure, if not add it
+
+					rt.Action = addAction(rt.Action, matches[1])
+
+					if len(rt.ResourceName) == 0 {
+						rt.ResourceName = matches[2]
+					} else {
+						rt.ResourceName = fmt.Sprintf("%s, %s", rt.ResourceName, matches[2])
+					}
+
+				} else {
+					// Also need to be looking for start time here
+					if matches := regexIsGraphTypeApply.FindStringSubmatch(test.CreateText[i]); len(matches) > 0 {
+						// We are on the start line for the create methods
+						// Now parse the start time fron the log line
+						startTime, _ := time.Parse(time.RFC3339, convertToRFC3339(test.CreateText[i]))
+
+						// Now we need to look for the end time
+						for x := i; x < len(test.CreateText); x++ {
+							if matches := regexIsGraphTypePlan.FindStringSubmatch(test.CreateText[x]); len(matches) > 0 {
+								endTime, _ := time.Parse(time.RFC3339, convertToRFC3339(test.CreateText[x]))
+								rt.Duration = float64(endTime.Sub(startTime))
+								test.Steps = append(test.Steps, rt)
+								i = x
+								rt.Action = nil
+								totalTestTime = totalTestTime + float64(rt.Duration)
+								test.CreateTime = totalTestTime
+								rt.Duration = 0.0 //time.Duration(0.0)
+								rt.ResourceName = ""
+								break
+							}
+						}
+					}
+				}
+			}
+
+		} else {
+			continue
+		}
+	}
+
+	// Now look over the destroy text
+	var drt ResourceTime
+	linesProcessed = 0
+
+	for txtIndex, destroyText := range test.DestroyText {
+		if linesProcessed == len(test.DestroyText)-1 {
+			break
+		}
+
+		//check to see if it is the DIFF line
+		if matches := regexIsDiff.FindStringSubmatch(destroyText); len(matches) > 0 {
+
+			// We found the diff line, now start looking for Create|Update|Destroy
+			for i := txtIndex; i < len(test.DestroyText); i++ {
+				linesProcessed = i
+				if matches := regexIsCreateUpdateOrDestroy.FindStringSubmatch(test.DestroyText[i]); len(matches) > 0 {
+
+					// Now I need to see if this Resource time already has an action of this type
+					// already in the data structure, if not add it
+					drt.Action = addAction(drt.Action, matches[1])
+
+					if len(drt.ResourceName) == 0 {
+						drt.ResourceName = matches[2]
+					} else {
+						drt.ResourceName = fmt.Sprintf("%s, %s", drt.ResourceName, matches[2])
+					}
+				} else {
+					// Also need to be looking for start time here
+					if matches := regexIsGraphTypeApply.FindStringSubmatch(test.DestroyText[i]); len(matches) > 0 {
+						// We are on the start line for the create methods
+						// Now parse the start time fron the log line
+						startTime, _ := time.Parse(time.RFC3339, convertToRFC3339(test.DestroyText[i]))
+
+						// Now we need to look for the end time
+						for x := i; x < len(test.DestroyText); x++ {
+							if matches := regexIsGraphTypeDestroy.FindStringSubmatch(test.DestroyText[x]); len(matches) > 0 {
+								endTime, _ := time.Parse(time.RFC3339, convertToRFC3339(test.DestroyText[x]))
+								drt.Duration = float64(endTime.Sub(startTime))
+								test.CleanUp = append(test.CleanUp, drt)
+								totalTestTime = totalTestTime + float64(drt.Duration)
+								test.TestOverhead = (test.Time * float64(time.Second)) - totalTestTime
+								test.CreateDestroyTime = totalTestTime
+								i = x
+								break
+							}
+						}
+					}
+				}
+			}
+
+		} else {
+
+			continue
+		}
+	}
+
+	dbg.Println("------------------------------------------------")
+	dbg.Println("")
+	dbg.Printf("TEST             : %s\n", test.Name)
+	dbg.Printf("Time             : %v\n", time.Duration(test.Time)*time.Second)
+	dbg.Printf("CreateTime       : %v\n", time.Duration(test.CreateTime))
+
+	if len(test.CleanUp) > 0 {
+		dbg.Printf("DestroyTime      : %v\n", time.Duration(test.CleanUp[0].Duration))
+	} else {
+		dbg.Println("DestroyTime      : 0.0")
+	}
+
+	dbg.Printf("CreateDestroyTime: %v\n", time.Duration(test.CreateDestroyTime))
+	dbg.Printf("Overhead         : %v\n", time.Duration(test.TestOverhead))
+	dbg.Println("")
+	dbg.Println("  CREATE STEP:")
+
+	for _, cur := range test.Steps {
+
+		dbg.Printf("    TestStep      : %v\n", cur.Action)
+		dbg.Printf("    TestStep      : %v\n", cur.ResourceName)
+		dbg.Printf("    TestStep      : %v\n\n", fmt.Sprintf("%.3f", float64(cur.Duration/float64(time.Second))))
+	}
+
+	dbg.Println("  DESTROY STEP:")
+
+	if len(test.CleanUp) > 0 {
+		dbg.Printf("    DestroyStep   : %v\n", test.CleanUp[0].Action)
+		dbg.Printf("    DestroyStep   : %v\n", test.CleanUp[0].ResourceName)
+		dbg.Printf("    DestroyStep   : %v\n", fmt.Sprintf("%.3f", float64(test.CleanUp[0].Duration/float64(time.Second))))
+	} else {
+		dbg.Println("    DestroyStep   : N/A")
+	}
+	dbg.Println("")
+
+	return test
+}
+
+func addAction(actions []ACTION, action string) []ACTION {
+	var newAction = actionFromString(action)
+
+	if len(actions) == 0 {
+		actions = make([]ACTION, 0)
+		actions = append(actions, newAction)
+	} else {
+		for i := len(actions) - 1; i >= 0; i-- {
+			if actions[i] == newAction {
+				return actions
+			}
+		}
+
+		actions = append(actions, newAction)
+	}
+
+	return actions
+}
+
+func actionFromString(action string) ACTION {
+
+	switch strings.ToLower(action) {
+	case "create":
+		return CREATE
+	case "update":
+		return UPDATE
+	case "destroy":
+		return DESTROY
+	default:
+		return UNKNOWN
+	}
+}
+
+func clearCreateDestroyText(test *Test) {
+	//fmt.Printf("Clear Create: %s", test.CreateText)
+	test.CreateText = nil
+
+	//fmt.Printf("Clear Destroy: %s", test.DestroyText)
+	test.DestroyText = nil
 }
 
 func parseTime(time string) float64 {
@@ -260,4 +520,33 @@ func (r *Report) Failures() int {
 	}
 
 	return count
+}
+
+func (action ACTION) String() string {
+	actions := [...]string{
+		"UNKNOWN",
+		"CREATE",
+		"UPDATE",
+		"DESTROY",
+	}
+
+	if action < UNKNOWN || action > DESTROY {
+		return "UNKNOWN"
+	}
+
+	return actions[action]
+}
+
+// Printf control the flow of output messages
+func (d Debug) Printf(s string, a ...interface{}) {
+	if d {
+		fmt.Printf(s, a...)
+	}
+}
+
+// Println control the flow of output messages
+func (d Debug) Println(s string) {
+	if d {
+		fmt.Println(s)
+	}
 }
