@@ -3,12 +3,12 @@ package formatter
 import (
 	"bufio"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/jeffreyCline/go-junit-report/helper"
 	"github.com/jeffreyCline/go-junit-report/parser"
 )
 
@@ -71,7 +71,7 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 		ts := JUnitTestSuite{
 			Tests:      len(pkg.Tests),
 			Failures:   0,
-			Time:       formatTime(pkg.Time),
+			Time:       helper.FormatTime(pkg.Time),
 			Name:       pkg.Name,
 			Properties: []JUnitProperty{},
 			TestCases:  []JUnitTestCase{},
@@ -97,10 +97,10 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 			testCase := JUnitTestCase{
 				Classname:      classname,
 				Name:           test.Name,
-				TotalTime:      formatTime(test.Time),
-				CreationTime:   formatTime(0),
-				DestroyTime:    formatTime(0),
-				ValidationTime: formatTime(0),
+				TotalTime:      helper.FormatTime(test.Time),
+				CreationTime:   helper.FormatTime(0),
+				DestroyTime:    helper.FormatTime(0),
+				ValidationTime: helper.FormatTime(0),
 				Failure:        nil,
 			}
 
@@ -118,13 +118,13 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 			}
 
 			if test.Result == parser.PASS {
-				testCase.CreationTime = formatTime(test.CreateTime / float64(time.Second))
+				testCase.CreationTime = helper.FormatTime(test.CreateTime / float64(time.Second))
 
 				if len(test.CleanUp) > 0 {
-					testCase.DestroyTime = formatTime(float64(test.CleanUp[0].Duration) / float64(time.Second))
+					testCase.DestroyTime = helper.FormatTime(float64(test.CleanUp[0].Duration) / float64(time.Second))
 				}
 
-				testCase.ValidationTime = formatTime(test.TestOverhead / float64(time.Second))
+				testCase.ValidationTime = helper.FormatTime(test.TestOverhead / float64(time.Second))
 			}
 
 			ts.TestCases = append(ts.TestCases, testCase)
@@ -150,8 +150,4 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 	writer.Flush()
 
 	return nil
-}
-
-func formatTime(time float64) string {
-	return fmt.Sprintf("%.3f", float64(time))
 }

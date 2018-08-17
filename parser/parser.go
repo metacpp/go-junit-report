@@ -2,12 +2,15 @@ package parser
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jeffreyCline/go-junit-report/helper"
 )
 
 // Result represents a test result.
@@ -15,9 +18,9 @@ type Result int
 
 // Test result constants
 const (
-	PASS Result = iota
-	FAIL
-	SKIP
+	PASS Result = 0
+	FAIL Result = 1
+	SKIP Result = 2
 )
 
 // ACTION Represents what action is being performed during the test step
@@ -36,9 +39,9 @@ const (
 
 // ResourceTime Contains the result if individual actions per resource
 type ResourceTime struct {
-	ResourceName string
-	Duration     float64
-	Action       []ACTION
+	ResourceName string   `json:"resourcename"`
+	Duration     float64  `json:"duration"`
+	Action       []ACTION `json:"action"`
 }
 
 // Report is a collection of package tests.
@@ -56,28 +59,27 @@ type Package struct {
 
 // Test contains the results of a single test.
 type Test struct {
-	Name              string
-	Time              float64
-	TestOverhead      float64
-	CreateTime        float64
-	CreateDestroyTime float64
-	Result            Result
-	Output            []string
-	CreateText        []string
-	DestroyText       []string
-	Steps             []ResourceTime
-	CleanUp           []ResourceTime
+	Name              string         `json:"name"`
+	Time              float64        `json:"time"`
+	TestOverhead      float64        `json:"overhead"`
+	CreateTime        float64        `json:"createtime"`
+	CreateDestroyTime float64        `json:"createdestroytime"`
+	Result            Result         `json:"result"`
+	Output            []string       `json:"-"`
+	CreateText        []string       `json:"-"`
+	DestroyText       []string       `json:"-"`
+	Steps             []ResourceTime `json:"steps"`
+	CleanUp           []ResourceTime `json:"cleanup"`
 }
 
 var (
-	regexStatus        = regexp.MustCompile(`^\s*--- (PASS|FAIL|SKIP): (.+) \((\d+\.\d+)(?: seconds|s)\)$`)
-	regexCoverage      = regexp.MustCompile(`^coverage:\s+(\d+\.\d+)%\s+of\s+statements(?:\sin\s.+)?$`)
-	regexResult        = regexp.MustCompile(`^(ok|FAIL)\s+([^ ]+)\s+(?:(\d+\.\d+)s|(\[\w+ failed]))(?:\s+coverage:\s+(\d+\.\d+)%\sof\sstatements(?:\sin\s.+)?)?$`)
-	regexOutput        = regexp.MustCompile(`(    )*\t(.*)`)
-	regexSummary       = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
-	regexTimeFormat    = regexp.MustCompile(`(\d{4})/(\d{2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})`)
-	regexCreationStart = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[INFO\]\sTest:\sUsing\s([\w-]+)\sas\stest\sregion$`)
-
+	regexStatus                  = regexp.MustCompile(`^\s*--- (PASS|FAIL|SKIP): (.+) \((\d+\.\d+)(?: seconds|s)\)$`)
+	regexCoverage                = regexp.MustCompile(`^coverage:\s+(\d+\.\d+)%\s+of\s+statements(?:\sin\s.+)?$`)
+	regexResult                  = regexp.MustCompile(`^(ok|FAIL)\s+([^ ]+)\s+(?:(\d+\.\d+)s|(\[\w+ failed]))(?:\s+coverage:\s+(\d+\.\d+)%\sof\sstatements(?:\sin\s.+)?)?$`)
+	regexOutput                  = regexp.MustCompile(`(    )*\t(.*)`)
+	regexSummary                 = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
+	regexTimeFormat              = regexp.MustCompile(`(\d{4})/(\d{2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})`)
+	regexCreationStart           = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s\[INFO\]\sTest:\sUsing\s([\w-]+)\sas\stest\sregion$`)
 	regexDestroyStart            = regexp.MustCompile(`^\d{4}/\d{2}/\d{2}.\d{2}:\d{2}:\d{2}.\SWARN\S.Test:.Executing.destroy.step`)
 	regexIsDiff                  = regexp.MustCompile(`^(\d{4}/\d{2}/\d{2}).(\d{2}:\d{2}:\d{2}).(\SWARN\S).(Test: Step plan: DIFF:)`)
 	regexIsCreateUpdateOrDestroy = regexp.MustCompile(`^(CREATE|UPDATE|DESTROY):.(.*)`)
@@ -523,6 +525,20 @@ func (r *Report) Failures() int {
 	return count
 }
 
+// Write control the flow of output messages
+func (c console) Write(s string, a ...interface{}) {
+	if c {
+		fmt.Printf(s, a...)
+	}
+}
+
+// WriteLine control the flow of output messages
+func (c console) WriteLine(s string) {
+	if c {
+		fmt.Println(s)
+	}
+}
+
 func (action ACTION) String() string {
 	actions := [...]string{
 		"UNKNOWN",
@@ -538,16 +554,61 @@ func (action ACTION) String() string {
 	return actions[action]
 }
 
-// Write control the flow of output messages
-func (c console) Write(s string, a ...interface{}) {
-	if c {
-		fmt.Printf(s, a...)
+func (result Result) String() string {
+	results := [...]string{
+		"PASS",
+		"FAIL",
+		"SKIP",
 	}
+
+	if result < PASS || result > SKIP {
+		return "FAIL"
+	}
+
+	return results[result]
 }
 
-// WriteLine control the flow of output messages
-func (c console) WriteLine(s string) {
-	if c {
-		fmt.Println(s)
-	}
+// MarshalJSON custom marshal function to format json output
+func (u *Test) MarshalJSON() ([]byte, error) {
+	type Alias Test
+	return json.Marshal(&struct {
+		Name              string         `json:"name"`
+		Time              string         `json:"time"`
+		TestOverhead      string         `json:"overhead"`
+		CreateTime        string         `json:"createtime"`
+		CreateDestroyTime string         `json:"createdestroytime"`
+		Result            string         `json:"result"`
+		Output            []string       `json:"-"`
+		CreateText        []string       `json:"-"`
+		DestroyText       []string       `json:"-"`
+		Steps             []ResourceTime `json:"steps"`
+		CleanUp           []ResourceTime `json:"cleanup"`
+		*Alias
+	}{
+		Name:              u.Name,
+		Time:              helper.FormatTime(u.Time),
+		TestOverhead:      helper.FormatTime(u.TestOverhead / float64(time.Second)),
+		CreateTime:        helper.FormatTime(u.CreateTime / float64(time.Second)),
+		CreateDestroyTime: helper.FormatTime(u.CreateDestroyTime / float64(time.Second)),
+		Result:            Result.String(u.Result),
+		Steps:             u.Steps,
+		CleanUp:           u.CleanUp,
+		Alias:             (*Alias)(u),
+	})
+}
+
+// MarshalJSON custom marshal function to format json output
+func (u *ResourceTime) MarshalJSON() ([]byte, error) {
+	type Alias ResourceTime
+	return json.Marshal(&struct {
+		ResourceName string `json:"resourcename"`
+		Duration     string `json:"duration"`
+		Action       string `json:"action"`
+		*Alias
+	}{
+		ResourceName: u.ResourceName,
+		Duration:     helper.FormatTime(u.Duration / float64(time.Second)),
+		Action:       strings.Trim(strings.Replace(fmt.Sprint(u.Action), " ", " ", -1), "[]"),
+		Alias:        (*Alias)(u),
+	})
 }
