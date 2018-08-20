@@ -12,8 +12,10 @@ import (
 func JSONReport(report *parser.Report, w io.Writer) error {
 
 	writer := bufio.NewWriter(w)
+	pkgCount := 0
 
 	for _, testPackage := range report.Packages {
+		pkgCount++
 		bytes, err := json.Marshal(testPackage.Tests)
 
 		if err != nil {
@@ -21,7 +23,12 @@ func JSONReport(report *parser.Report, w io.Writer) error {
 		}
 
 		writer.Write(bytes)
-		writer.WriteByte('\n')
+
+		if pkgCount < len(report.Packages) {
+			writer.WriteByte(',')
+		} else {
+			writer.WriteByte('\n')
+		}
 	}
 
 	writer.Flush()
