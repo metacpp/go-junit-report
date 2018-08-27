@@ -77,6 +77,10 @@ func JUnitReportXML(report *parser.Report, noXMLHeader bool, goVersion string, w
 			TestCases:  []JUnitTestCase{},
 		}
 
+		if ts.Tests == 0 {
+			break
+		}
+
 		classname := pkg.Name
 		if idx := strings.LastIndex(classname, "/"); idx > -1 && idx < len(pkg.Name) {
 			classname = pkg.Name[idx+1:]

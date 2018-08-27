@@ -16,6 +16,14 @@ func JSONReport(report *parser.Report, w io.Writer) error {
 
 	for _, testPackage := range report.Packages {
 		pkgCount++
+
+		if len(testPackage.Tests) == 0 {
+			writer.WriteByte('\n')
+			break
+		} else {
+			writer.WriteByte(',')
+		}
+
 		bytes, err := json.Marshal(testPackage.Tests)
 
 		if err != nil {
@@ -23,12 +31,6 @@ func JSONReport(report *parser.Report, w io.Writer) error {
 		}
 
 		writer.Write(bytes)
-
-		if pkgCount < len(report.Packages) {
-			writer.WriteByte(',')
-		} else {
-			writer.WriteByte('\n')
-		}
 	}
 
 	writer.Flush()
