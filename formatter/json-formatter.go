@@ -20,7 +20,7 @@ func JSONReport(report *parser.Report, w io.Writer) error {
 		if len(testPackage.Tests) == 0 {
 			writer.WriteByte('\n')
 			break
-		} else {
+		} else if pkgCount > 1 {
 			writer.WriteByte(',')
 		}
 
