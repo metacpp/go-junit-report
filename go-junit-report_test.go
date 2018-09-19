@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/metacpp/go-junit-report/formatter"
-	"github.com/metacpp/go-junit-report/parser"
+	"github.com/jeffreyCline/go-junit-report/formatter"
+	"github.com/jeffreyCline/go-junit-report/parser"
 )
 
 type TestCase struct {

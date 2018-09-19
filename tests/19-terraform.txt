@@ -1,0 +1,1355 @@
+=== RUN   TestAccAzureRMNetworkInterface_setNetworkSecurityGroupId
+2018/05/25 18:28:40 [INFO] terraform: building graph: GraphTypeValidate
+2018/05/25 18:28:41 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:28:41 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:28:43 [WARN] Test: Step plan: DIFF:
+
+CREATE: azurerm_network_interface.test
+  applied_dns_servers.#:                                              "" => "<computed>"
+  dns_servers.#:                                                      "" => "<computed>"
+  enable_accelerated_networking:                                      "" => "false"
+  enable_ip_forwarding:                                               "" => "false"
+  internal_dns_name_label:                                            "" => "<computed>"
+  internal_fqdn:                                                      "" => "<computed>"
+  ip_configuration.#:                                                 "" => "1"
+  ip_configuration.0.application_gateway_backend_address_pools_ids.#: "" => "<computed>"
+  ip_configuration.0.application_security_group_ids.#:                "" => "<computed>"
+  ip_configuration.0.load_balancer_backend_address_pools_ids.#:       "" => "<computed>"
+  ip_configuration.0.load_balancer_inbound_nat_rules_ids.#:           "" => "<computed>"
+  ip_configuration.0.name:                                            "" => "testconfiguration1"
+  ip_configuration.0.primary:                                         "" => "<computed>"
+  ip_configuration.0.private_ip_address:                              "" => "<computed>"
+  ip_configuration.0.private_ip_address_allocation:                   "" => "dynamic"
+  ip_configuration.0.public_ip_address_id:                            "" => "<computed>"
+  ip_configuration.0.subnet_id:                                       "" => "<computed>"
+  location:                                                           "" => "westeurope" (forces new resource)
+  mac_address:                                                        "" => "<computed>"
+  name:                                                               "" => "acctestni-6461415345339613432" (forces new resource)
+  private_ip_address:                                                 "" => "<computed>"
+  private_ip_addresses.#:                                             "" => "<computed>"
+  resource_group_name:                                                "" => "acctest-rg-6461415345339613432" (forces new resource)
+  tags.%:                                                             "" => "<computed>"
+  virtual_machine_id:                                                 "" => "<computed>"
+CREATE: azurerm_resource_group.test
+  location: "" => "westeurope" (forces new resource)
+  name:     "" => "acctest-rg-6461415345339613432" (forces new resource)
+  tags.%:   "" => "<computed>"
+CREATE: azurerm_subnet.test
+  address_prefix:       "" => "10.0.2.0/24"
+  ip_configurations.#:  "" => "<computed>"
+  name:                 "" => "testsubnet" (forces new resource)
+  resource_group_name:  "" => "acctest-rg-6461415345339613432" (forces new resource)
+  virtual_network_name: "" => "acctestvn-6461415345339613432" (forces new resource)
+CREATE: azurerm_virtual_network.test
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.0.0.0/16"
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctestvn-6461415345339613432" (forces new resource)
+  resource_group_name: "" => "acctest-rg-6461415345339613432" (forces new resource)
+  subnet.#:            "" => "<computed>"
+  tags.%:              "" => "<computed>"
+
+STATE:
+
+<no state>
+2018/05/25 18:28:43 [INFO] terraform: building graph: GraphTypeApply
+2018/05/25 18:28:46 [INFO] preparing arguments for Azure ARM virtual network creation.
+2018/05/25 18:29:00 [INFO] preparing arguments for Azure ARM Subnet creation.
+2018/05/25 18:29:11 [INFO] preparing arguments for AzureRM Network Interface creation.
+2018/05/25 18:29:14 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:29:15 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:29:17 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:29:19 [INFO] terraform: building graph: GraphTypeValidate
+2018/05/25 18:29:19 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:29:21 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:29:23 [WARN] Test: Step plan: DIFF:
+
+UPDATE: azurerm_network_interface.test
+  network_security_group_id: "" => "<computed>"
+CREATE: azurerm_network_security_group.test
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctestnsg-6461415345339613432" (forces new resource)
+  resource_group_name: "" => "acctest-rg-6461415345339613432" (forces new resource)
+  security_rule.#:     "" => "<computed>"
+  tags.%:              "" => "<computed>"
+
+STATE:
+
+azurerm_network_interface.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkInterfaces/acctestni-6461415345339613432
+  provider = provider.azurerm
+  applied_dns_servers.# = 0
+  dns_servers.# = 0
+  enable_accelerated_networking = false
+  enable_ip_forwarding = false
+  internal_dns_name_label =
+  internal_fqdn =
+  ip_configuration.# = 1
+  ip_configuration.0.application_gateway_backend_address_pools_ids.# = 0
+  ip_configuration.0.application_security_group_ids.# = 0
+  ip_configuration.0.load_balancer_backend_address_pools_ids.# = 0
+  ip_configuration.0.load_balancer_inbound_nat_rules_ids.# = 0
+  ip_configuration.0.name = testconfiguration1
+  ip_configuration.0.primary = true
+  ip_configuration.0.private_ip_address =
+  ip_configuration.0.private_ip_address_allocation = dynamic
+  ip_configuration.0.public_ip_address_id =
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432/subnets/testsubnet
+  location = westeurope
+  mac_address =
+  name = acctestni-6461415345339613432
+  network_security_group_id =
+  private_ip_address = 10.0.2.4
+  private_ip_addresses.# = 1
+  private_ip_addresses.0 = 10.0.2.4
+  resource_group_name = acctest-rg-6461415345339613432
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+    azurerm_subnet.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432
+  provider = provider.azurerm
+  location = westeurope
+  name = acctest-rg-6461415345339613432
+  tags.% = 0
+azurerm_subnet.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432/subnets/testsubnet
+  provider = provider.azurerm
+  address_prefix = 10.0.2.0/24
+  ip_configurations.# = 1
+  ip_configurations.3531960402 = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkInterfaces/acctestni-6461415345339613432/ipConfigurations/testconfiguration1
+  name = testsubnet
+  resource_group_name = acctest-rg-6461415345339613432
+  service_endpoints.# = 0
+  virtual_network_name = acctestvn-6461415345339613432
+
+  Dependencies:
+    azurerm_resource_group.test
+    azurerm_virtual_network.test
+azurerm_virtual_network.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.0.0.0/16
+  dns_servers.# = 0
+  location = westeurope
+  name = acctestvn-6461415345339613432
+  resource_group_name = acctest-rg-6461415345339613432
+  subnet.# = 1
+  subnet.2219821521.address_prefix = 10.0.2.0/24
+  subnet.2219821521.name = testsubnet
+  subnet.2219821521.security_group =
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+2018/05/25 18:29:23 [INFO] terraform: building graph: GraphTypeApply
+2018/05/25 18:29:37 [INFO] preparing arguments for AzureRM Network Interface creation.
+2018/05/25 18:29:39 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:29:41 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:29:44 [INFO] terraform: building graph: GraphTypePlan
+2018/05/25 18:29:45 [WARN] Test: Executing destroy step
+2018/05/25 18:29:45 [INFO] terraform: building graph: GraphTypeValidate
+2018/05/25 18:29:45 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:29:48 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/05/25 18:29:48 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_network_interface.test
+DESTROY: azurerm_network_security_group.test
+DESTROY: azurerm_resource_group.test
+DESTROY: azurerm_subnet.test
+DESTROY: azurerm_virtual_network.test
+
+STATE:
+
+azurerm_network_interface.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkInterfaces/acctestni-6461415345339613432
+  provider = provider.azurerm
+  applied_dns_servers.# = 0
+  dns_servers.# = 0
+  enable_accelerated_networking = false
+  enable_ip_forwarding = false
+  internal_dns_name_label =
+  internal_fqdn =
+  ip_configuration.# = 1
+  ip_configuration.0.application_gateway_backend_address_pools_ids.# = 0
+  ip_configuration.0.application_security_group_ids.# = 0
+  ip_configuration.0.load_balancer_backend_address_pools_ids.# = 0
+  ip_configuration.0.load_balancer_inbound_nat_rules_ids.# = 0
+  ip_configuration.0.name = testconfiguration1
+  ip_configuration.0.primary = true
+  ip_configuration.0.private_ip_address =
+  ip_configuration.0.private_ip_address_allocation = dynamic
+  ip_configuration.0.public_ip_address_id =
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432/subnets/testsubnet
+  location = westeurope
+  mac_address =
+  name = acctestni-6461415345339613432
+  network_security_group_id = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkSecurityGroups/acctestnsg-6461415345339613432
+  private_ip_address = 10.0.2.4
+  private_ip_addresses.# = 1
+  private_ip_addresses.0 = 10.0.2.4
+  resource_group_name = acctest-rg-6461415345339613432
+  tags.% = 0
+
+  Dependencies:
+    azurerm_network_security_group.test
+    azurerm_resource_group.test
+    azurerm_subnet.test
+azurerm_network_security_group.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkSecurityGroups/acctestnsg-6461415345339613432
+  provider = provider.azurerm
+  location = westeurope
+  name = acctestnsg-6461415345339613432
+  resource_group_name = acctest-rg-6461415345339613432
+  security_rule.# = 0
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432
+  provider = provider.azurerm
+  location = westeurope
+  name = acctest-rg-6461415345339613432
+  tags.% = 0
+azurerm_subnet.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432/subnets/testsubnet
+  provider = provider.azurerm
+  address_prefix = 10.0.2.0/24
+  ip_configurations.# = 1
+  ip_configurations.3531960402 = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/networkInterfaces/acctestni-6461415345339613432/ipConfigurations/testconfiguration1
+  name = testsubnet
+  resource_group_name = acctest-rg-6461415345339613432
+  service_endpoints.# = 0
+  virtual_network_name = acctestvn-6461415345339613432
+
+  Dependencies:
+    azurerm_resource_group.test
+    azurerm_virtual_network.test
+azurerm_virtual_network.test:
+  ID = /subscriptions/****/resourceGroups/acctest-rg-6461415345339613432/providers/Microsoft.Network/virtualNetworks/acctestvn-6461415345339613432
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.0.0.0/16
+  dns_servers.# = 0
+  location = westeurope
+  name = acctestvn-6461415345339613432
+  resource_group_name = acctest-rg-6461415345339613432
+  subnet.# = 1
+  subnet.2219821521.address_prefix = 10.0.2.0/24
+  subnet.2219821521.name = testsubnet
+  subnet.2219821521.security_group =
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+2018/05/25 18:29:48 [INFO] terraform: building graph: GraphTypeApply
+2018/05/25 18:30:41 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/05/25 18:30:41 [INFO] terraform: building graph: GraphTypeRefresh
+2018/05/25 18:30:41 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- PASS: TestAccAzureRMNetworkInterface_setNetworkSecurityGroupId (120.68s)
+PASS
+=== RUN   TestAccAzureRMVirtualNetworkGateway_activeActive
+2018/06/14 01:55:20 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 01:55:20 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 01:55:20 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 01:55:21 [WARN] Test: Step plan: DIFF:
+
+CREATE: azurerm_public_ip.first
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westeurope" (forces new resource)
+  name:                         "" => "acctestpip1-8400827774292026925" (forces new resource)
+  public_ip_address_allocation: "" => "dynamic"
+  resource_group_name:          "" => "acctestRG-8400827774292026925" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_public_ip.second
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westeurope" (forces new resource)
+  name:                         "" => "acctestpip2-8400827774292026925" (forces new resource)
+  public_ip_address_allocation: "" => "dynamic"
+  resource_group_name:          "" => "acctestRG-8400827774292026925" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_resource_group.test
+  location: "" => "westeurope" (forces new resource)
+  name:     "" => "acctestRG-8400827774292026925" (forces new resource)
+  tags.%:   "" => "<computed>"
+CREATE: azurerm_subnet.test
+  address_prefix:       "" => "10.0.1.0/24"
+  ip_configurations.#:  "" => "<computed>"
+  name:                 "" => "GatewaySubnet" (forces new resource)
+  resource_group_name:  "" => "acctestRG-8400827774292026925" (forces new resource)
+  virtual_network_name: "" => "acctestvn-8400827774292026925" (forces new resource)
+CREATE: azurerm_virtual_network.test
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.0.0.0/16"
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctestvn-8400827774292026925" (forces new resource)
+  resource_group_name: "" => "acctestRG-8400827774292026925" (forces new resource)
+  subnet.#:            "" => "<computed>"
+  tags.%:              "" => "<computed>"
+CREATE: azurerm_virtual_network_gateway.test
+  active_active:                                    "" => "true"
+  bgp_settings.#:                                   "" => "1"
+  bgp_settings.0.asn:                               "" => "65010"
+  bgp_settings.0.peering_address:                   "" => "<computed>" (forces new resource)
+  enable_bgp:                                       "" => "true"
+  ip_configuration.#:                               "" => "2"
+  ip_configuration.0.name:                          "" => "gw-ip1"
+  ip_configuration.0.private_ip_address_allocation: "" => "Dynamic"
+  ip_configuration.0.public_ip_address_id:          "" => "<computed>"
+  ip_configuration.0.subnet_id:                     "" => "<computed>"
+  ip_configuration.1.name:                          "" => "gw-ip2"
+  ip_configuration.1.private_ip_address_allocation: "" => "Dynamic"
+  ip_configuration.1.public_ip_address_id:          "" => "<computed>"
+  ip_configuration.1.subnet_id:                     "" => "<computed>"
+  location:                                         "" => "westeurope" (forces new resource)
+  name:                                             "" => "acctestvng-8400827774292026925" (forces new resource)
+  resource_group_name:                              "" => "acctestRG-8400827774292026925" (forces new resource)
+  sku:                                              "" => "VpnGw1"
+  tags.%:                                           "" => "<computed>"
+  type:                                             "" => "Vpn" (forces new resource)
+  vpn_type:                                         "" => "RouteBased" (forces new resource)
+
+STATE:
+
+<no state>
+2018/06/14 01:55:21 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 01:55:24 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/14 01:55:24 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/14 01:55:24 [INFO] preparing arguments for Azure ARM virtual network creation.
+2018/06/14 01:55:38 [INFO] preparing arguments for Azure ARM Subnet creation.
+2018/06/14 01:55:39 [INFO] preparing arguments for AzureRM Virtual Network Gateway creation.
+2018/06/14 02:24:35 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:24:37 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:24:39 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:24:40 [WARN] Test: Executing destroy step
+2018/06/14 02:24:40 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 02:24:41 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:24:43 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:24:43 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_public_ip.first
+DESTROY: azurerm_public_ip.second
+DESTROY: azurerm_resource_group.test
+DESTROY: azurerm_subnet.test
+DESTROY: azurerm_virtual_network.test
+DESTROY: azurerm_virtual_network_gateway.test
+
+STATE:
+
+azurerm_public_ip.first:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/publicIPAddresses/acctestpip1-8400827774292026925
+  provider = provider.azurerm
+  ip_address = 104.45.20.141
+  location = westeurope
+  name = acctestpip1-8400827774292026925
+  public_ip_address_allocation = dynamic
+  resource_group_name = acctestRG-8400827774292026925
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_public_ip.second:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/publicIPAddresses/acctestpip2-8400827774292026925
+  provider = provider.azurerm
+  ip_address = 104.46.44.215
+  location = westeurope
+  name = acctestpip2-8400827774292026925
+  public_ip_address_allocation = dynamic
+  resource_group_name = acctestRG-8400827774292026925
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925
+  provider = provider.azurerm
+  location = westeurope
+  name = acctestRG-8400827774292026925
+  tags.% = 0
+azurerm_subnet.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworks/acctestvn-8400827774292026925/subnets/GatewaySubnet
+  provider = provider.azurerm
+  address_prefix = 10.0.1.0/24
+  ip_configurations.# = 2
+  ip_configurations.2694741320 = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworkGateways/acctestvng-8400827774292026925/ipConfigurations/gw-ip1
+  ip_configurations.966208754 = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworkGateways/acctestvng-8400827774292026925/ipConfigurations/gw-ip2
+  name = GatewaySubnet
+  resource_group_name = acctestRG-8400827774292026925
+  service_endpoints.# = 0
+  virtual_network_name = acctestvn-8400827774292026925
+
+  Dependencies:
+    azurerm_resource_group.test
+    azurerm_virtual_network.test
+azurerm_virtual_network.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworks/acctestvn-8400827774292026925
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.0.0.0/16
+  dns_servers.# = 0
+  location = westeurope
+  name = acctestvn-8400827774292026925
+  resource_group_name = acctestRG-8400827774292026925
+  subnet.# = 1
+  subnet.2563334686.address_prefix = 10.0.1.0/24
+  subnet.2563334686.name = GatewaySubnet
+  subnet.2563334686.security_group = 
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_virtual_network_gateway.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworkGateways/acctestvng-8400827774292026925
+  provider = provider.azurerm
+  active_active = true
+  bgp_settings.# = 1
+  bgp_settings.0.asn = 65010
+  bgp_settings.0.peer_weight = 0
+  bgp_settings.0.peering_address = 10.0.1.4,10.0.1.5
+  enable_bgp = true
+  ip_configuration.# = 2
+  ip_configuration.0.name = gw-ip1
+  ip_configuration.0.private_ip_address_allocation = Dynamic
+  ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/publicIPAddresses/acctestpip1-8400827774292026925
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworks/acctestvn-8400827774292026925/subnets/GatewaySubnet
+  ip_configuration.1.name = gw-ip2
+  ip_configuration.1.private_ip_address_allocation = Dynamic
+  ip_configuration.1.public_ip_address_id = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/publicIPAddresses/acctestpip2-8400827774292026925
+  ip_configuration.1.subnet_id = /subscriptions/****/resourceGroups/acctestRG-8400827774292026925/providers/Microsoft.Network/virtualNetworks/acctestvn-8400827774292026925/subnets/GatewaySubnet
+  location = westeurope
+  name = acctestvng-8400827774292026925
+  resource_group_name = acctestRG-8400827774292026925
+  sku = VpnGw1
+  tags.% = 0
+  type = Vpn
+  vpn_type = RouteBased
+
+  Dependencies:
+    azurerm_public_ip.first
+    azurerm_public_ip.second
+    azurerm_resource_group.test
+    azurerm_subnet.test
+2018/06/14 02:24:43 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 02:30:55 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:30:55 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:30:55 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- PASS: TestAccAzureRMVirtualNetworkGateway_activeActive (2134.77s)
+PASS
+=== RUN   TestAccAzureRMVirtualNetworkGatewayConnection_sitetosite
+2018/06/14 01:53:37 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 01:53:37 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 01:53:37 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 01:53:39 [WARN] Test: Step plan: DIFF:
+
+CREATE: azurerm_local_network_gateway.test
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.1.1.0/24"
+  gateway_address:     "" => "168.62.225.23"
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctest-3912391674495712969" (forces new resource)
+  resource_group_name: "" => "acctestRG-3912391674495712969" (forces new resource)
+  tags.%:              "" => "<computed>"
+CREATE: azurerm_public_ip.test
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westeurope" (forces new resource)
+  name:                         "" => "acctest-3912391674495712969" (forces new resource)
+  public_ip_address_allocation: "" => "dynamic"
+  resource_group_name:          "" => "acctestRG-3912391674495712969" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_resource_group.test
+  location: "" => "westeurope" (forces new resource)
+  name:     "" => "acctestRG-3912391674495712969" (forces new resource)
+  tags.%:   "" => "<computed>"
+CREATE: azurerm_subnet.test
+  address_prefix:       "" => "10.0.1.0/24"
+  ip_configurations.#:  "" => "<computed>"
+  name:                 "" => "GatewaySubnet" (forces new resource)
+  resource_group_name:  "" => "acctestRG-3912391674495712969" (forces new resource)
+  virtual_network_name: "" => "acctestvn-3912391674495712969" (forces new resource)
+CREATE: azurerm_virtual_network.test
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.0.0.0/16"
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctestvn-3912391674495712969" (forces new resource)
+  resource_group_name: "" => "acctestRG-3912391674495712969" (forces new resource)
+  subnet.#:            "" => "<computed>"
+  tags.%:              "" => "<computed>"
+CREATE: azurerm_virtual_network_gateway.test
+  active_active:                                    "" => "<computed>"
+  bgp_settings.#:                                   "" => "<computed>"
+  enable_bgp:                                       "" => "<computed>"
+  ip_configuration.#:                               "" => "1"
+  ip_configuration.0.name:                          "" => "vnetGatewayConfig"
+  ip_configuration.0.private_ip_address_allocation: "" => "Dynamic"
+  ip_configuration.0.public_ip_address_id:          "" => "<computed>"
+  ip_configuration.0.subnet_id:                     "" => "<computed>"
+  location:                                         "" => "westeurope" (forces new resource)
+  name:                                             "" => "acctest-3912391674495712969" (forces new resource)
+  resource_group_name:                              "" => "acctestRG-3912391674495712969" (forces new resource)
+  sku:                                              "" => "Basic"
+  tags.%:                                           "" => "<computed>"
+  type:                                             "" => "Vpn" (forces new resource)
+  vpn_type:                                         "" => "RouteBased" (forces new resource)
+CREATE: azurerm_virtual_network_gateway_connection.test
+  enable_bgp:                         "" => "<computed>"
+  local_network_gateway_id:           "" => "<computed>"
+  location:                           "" => "westeurope" (forces new resource)
+  name:                               "" => "acctest-3912391674495712969" (forces new resource)
+  resource_group_name:                "" => "acctestRG-3912391674495712969" (forces new resource)
+  routing_weight:                     "" => "<computed>"
+  shared_key:                         "<sensitive>" => "<sensitive>" (attribute changed)
+  tags.%:                             "" => "<computed>"
+  type:                               "" => "IPsec" (forces new resource)
+  use_policy_based_traffic_selectors: "" => "<computed>"
+  virtual_network_gateway_id:         "" => "<computed>" (forces new resource)
+
+STATE:
+
+<no state>
+2018/06/14 01:53:39 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 01:53:42 [INFO] preparing arguments for Azure ARM virtual network creation.
+2018/06/14 01:53:42 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/14 01:53:56 [INFO] preparing arguments for Azure ARM Subnet creation.
+2018/06/14 01:53:56 [INFO] preparing arguments for AzureRM Virtual Network Gateway creation.
+2018/06/14 02:23:35 [INFO] preparing arguments for AzureRM Virtual Network Gateway Connection creation.
+2018/06/14 02:24:12 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:24:14 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:24:18 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:24:20 [WARN] Test: Executing destroy step
+2018/06/14 02:24:20 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 02:24:20 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:24:24 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:24:24 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_local_network_gateway.test
+DESTROY: azurerm_public_ip.test
+DESTROY: azurerm_resource_group.test
+DESTROY: azurerm_subnet.test
+DESTROY: azurerm_virtual_network.test
+DESTROY: azurerm_virtual_network_gateway.test
+DESTROY: azurerm_virtual_network_gateway_connection.test
+
+STATE:
+
+azurerm_local_network_gateway.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/localNetworkGateways/acctest-3912391674495712969
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.1.1.0/24
+  bgp_settings.# = 0
+  gateway_address = 168.62.225.23
+  location = westeurope
+  name = acctest-3912391674495712969
+  resource_group_name = acctestRG-3912391674495712969
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_public_ip.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/publicIPAddresses/acctest-3912391674495712969
+  provider = provider.azurerm
+  ip_address = 23.97.179.27
+  location = westeurope
+  name = acctest-3912391674495712969
+  public_ip_address_allocation = dynamic
+  resource_group_name = acctestRG-3912391674495712969
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969
+  provider = provider.azurerm
+  location = westeurope
+  name = acctestRG-3912391674495712969
+  tags.% = 0
+azurerm_subnet.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworks/acctestvn-3912391674495712969/subnets/GatewaySubnet
+  provider = provider.azurerm
+  address_prefix = 10.0.1.0/24
+  ip_configurations.# = 1
+  ip_configurations.3441806769 = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworkGateways/acctest-3912391674495712969/ipConfigurations/vnetGatewayConfig
+  name = GatewaySubnet
+  resource_group_name = acctestRG-3912391674495712969
+  service_endpoints.# = 0
+  virtual_network_name = acctestvn-3912391674495712969
+
+  Dependencies:
+    azurerm_resource_group.test
+    azurerm_virtual_network.test
+azurerm_virtual_network.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworks/acctestvn-3912391674495712969
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.0.0.0/16
+  dns_servers.# = 0
+  location = westeurope
+  name = acctestvn-3912391674495712969
+  resource_group_name = acctestRG-3912391674495712969
+  subnet.# = 1
+  subnet.2563334686.address_prefix = 10.0.1.0/24
+  subnet.2563334686.name = GatewaySubnet
+  subnet.2563334686.security_group = 
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_virtual_network_gateway.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworkGateways/acctest-3912391674495712969
+  provider = provider.azurerm
+  active_active = false
+  bgp_settings.# = 1
+  bgp_settings.0.asn = 65515
+  bgp_settings.0.peer_weight = 0
+  bgp_settings.0.peering_address = 10.0.1.254
+  enable_bgp = false
+  ip_configuration.# = 1
+  ip_configuration.0.name = vnetGatewayConfig
+  ip_configuration.0.private_ip_address_allocation = Dynamic
+  ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/publicIPAddresses/acctest-3912391674495712969
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworks/acctestvn-3912391674495712969/subnets/GatewaySubnet
+  location = westeurope
+  name = acctest-3912391674495712969
+  resource_group_name = acctestRG-3912391674495712969
+  sku = Basic
+  tags.% = 0
+  type = Vpn
+  vpn_type = RouteBased
+
+  Dependencies:
+    azurerm_public_ip.test
+    azurerm_resource_group.test
+    azurerm_subnet.test
+azurerm_virtual_network_gateway_connection.test:
+  ID = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/connections/acctest-3912391674495712969
+  provider = provider.azurerm
+  enable_bgp = false
+  ipsec_policy.# = 0
+  local_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/localNetworkGateways/acctest-3912391674495712969
+  location = westeurope
+  name = acctest-3912391674495712969
+  resource_group_name = acctestRG-3912391674495712969
+  routing_weight = 0
+  shared_key = 4-v3ry-53cr37-1p53c-5h4r3d-k3y
+  tags.% = 0
+  type = IPsec
+  use_policy_based_traffic_selectors = false
+  virtual_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-3912391674495712969/providers/Microsoft.Network/virtualNetworkGateways/acctest-3912391674495712969
+
+  Dependencies:
+    azurerm_local_network_gateway.test
+    azurerm_resource_group.test
+    azurerm_virtual_network_gateway.test
+2018/06/14 02:24:24 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 02:33:42 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:33:42 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:33:42 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- PASS: TestAccAzureRMVirtualNetworkGatewayConnection_sitetosite (2405.10s)
+PASS
+=== RUN   TestAccAzureRMVirtualNetworkGatewayConnection_vnettonet
+2018/06/14 01:53:54 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 01:53:54 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 01:53:54 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 01:53:55 [WARN] Test: Step plan: DIFF:
+
+CREATE: azurerm_public_ip.test_1
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westeurope" (forces new resource)
+  name:                         "" => "acctest-8560821667413972485" (forces new resource)
+  public_ip_address_allocation: "" => "dynamic"
+  resource_group_name:          "" => "acctestRG-8560821667413972485" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_public_ip.test_2
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westus" (forces new resource)
+  name:                         "" => "acctest-2986862988941732050" (forces new resource)
+  public_ip_address_allocation: "" => "dynamic"
+  resource_group_name:          "" => "acctestRG-2986862988941732050" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_resource_group.test_1
+  location: "" => "westeurope" (forces new resource)
+  name:     "" => "acctestRG-8560821667413972485" (forces new resource)
+  tags.%:   "" => "<computed>"
+CREATE: azurerm_resource_group.test_2
+  location: "" => "westus" (forces new resource)
+  name:     "" => "acctestRG-2986862988941732050" (forces new resource)
+  tags.%:   "" => "<computed>"
+CREATE: azurerm_subnet.test_1
+  address_prefix:       "" => "10.0.1.0/24"
+  ip_configurations.#:  "" => "<computed>"
+  name:                 "" => "GatewaySubnet" (forces new resource)
+  resource_group_name:  "" => "acctestRG-8560821667413972485" (forces new resource)
+  virtual_network_name: "" => "acctestvn-8560821667413972485" (forces new resource)
+CREATE: azurerm_subnet.test_2
+  address_prefix:       "" => "10.1.1.0/24"
+  ip_configurations.#:  "" => "<computed>"
+  name:                 "" => "GatewaySubnet" (forces new resource)
+  resource_group_name:  "" => "acctestRG-2986862988941732050" (forces new resource)
+  virtual_network_name: "" => "acctest-2986862988941732050" (forces new resource)
+CREATE: azurerm_virtual_network.test_1
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.0.0.0/16"
+  location:            "" => "westeurope" (forces new resource)
+  name:                "" => "acctestvn-8560821667413972485" (forces new resource)
+  resource_group_name: "" => "acctestRG-8560821667413972485" (forces new resource)
+  subnet.#:            "" => "<computed>"
+  tags.%:              "" => "<computed>"
+CREATE: azurerm_virtual_network.test_2
+  address_space.#:     "" => "1"
+  address_space.0:     "" => "10.1.0.0/16"
+  location:            "" => "westus" (forces new resource)
+  name:                "" => "acctest-2986862988941732050" (forces new resource)
+  resource_group_name: "" => "acctestRG-2986862988941732050" (forces new resource)
+  subnet.#:            "" => "<computed>"
+  tags.%:              "" => "<computed>"
+CREATE: azurerm_virtual_network_gateway.test_1
+  active_active:                                    "" => "<computed>"
+  bgp_settings.#:                                   "" => "<computed>"
+  enable_bgp:                                       "" => "<computed>"
+  ip_configuration.#:                               "" => "1"
+  ip_configuration.0.name:                          "" => "vnetGatewayConfig"
+  ip_configuration.0.private_ip_address_allocation: "" => "Dynamic"
+  ip_configuration.0.public_ip_address_id:          "" => "<computed>"
+  ip_configuration.0.subnet_id:                     "" => "<computed>"
+  location:                                         "" => "westeurope" (forces new resource)
+  name:                                             "" => "acctest-8560821667413972485" (forces new resource)
+  resource_group_name:                              "" => "acctestRG-8560821667413972485" (forces new resource)
+  sku:                                              "" => "Basic"
+  tags.%:                                           "" => "<computed>"
+  type:                                             "" => "Vpn" (forces new resource)
+  vpn_type:                                         "" => "RouteBased" (forces new resource)
+CREATE: azurerm_virtual_network_gateway.test_2
+  active_active:                                    "" => "<computed>"
+  bgp_settings.#:                                   "" => "<computed>"
+  enable_bgp:                                       "" => "<computed>"
+  ip_configuration.#:                               "" => "1"
+  ip_configuration.0.name:                          "" => "vnetGatewayConfig"
+  ip_configuration.0.private_ip_address_allocation: "" => "Dynamic"
+  ip_configuration.0.public_ip_address_id:          "" => "<computed>"
+  ip_configuration.0.subnet_id:                     "" => "<computed>"
+  location:                                         "" => "westus" (forces new resource)
+  name:                                             "" => "acctest-2986862988941732050" (forces new resource)
+  resource_group_name:                              "" => "acctestRG-2986862988941732050" (forces new resource)
+  sku:                                              "" => "Basic"
+  tags.%:                                           "" => "<computed>"
+  type:                                             "" => "Vpn" (forces new resource)
+  vpn_type:                                         "" => "RouteBased" (forces new resource)
+CREATE: azurerm_virtual_network_gateway_connection.test_1
+  enable_bgp:                         "" => "<computed>"
+  location:                           "" => "westeurope" (forces new resource)
+  name:                               "" => "acctest-8560821667413972485" (forces new resource)
+  peer_virtual_network_gateway_id:    "" => "<computed>" (forces new resource)
+  resource_group_name:                "" => "acctestRG-8560821667413972485" (forces new resource)
+  routing_weight:                     "" => "<computed>"
+  shared_key:                         "<sensitive>" => "<sensitive>" (attribute changed)
+  tags.%:                             "" => "<computed>"
+  type:                               "" => "Vnet2Vnet" (forces new resource)
+  use_policy_based_traffic_selectors: "" => "<computed>"
+  virtual_network_gateway_id:         "" => "<computed>" (forces new resource)
+CREATE: azurerm_virtual_network_gateway_connection.test_2
+  enable_bgp:                         "" => "<computed>"
+  location:                           "" => "westus" (forces new resource)
+  name:                               "" => "acctest-2986862988941732050" (forces new resource)
+  peer_virtual_network_gateway_id:    "" => "<computed>" (forces new resource)
+  resource_group_name:                "" => "acctestRG-2986862988941732050" (forces new resource)
+  routing_weight:                     "" => "<computed>"
+  shared_key:                         "<sensitive>" => "<sensitive>" (attribute changed)
+  tags.%:                             "" => "<computed>"
+  type:                               "" => "Vnet2Vnet" (forces new resource)
+  use_policy_based_traffic_selectors: "" => "<computed>"
+  virtual_network_gateway_id:         "" => "<computed>" (forces new resource)
+
+STATE:
+
+<no state>
+2018/06/14 01:53:55 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 01:53:57 [INFO] preparing arguments for Azure ARM virtual network creation.
+2018/06/14 01:53:57 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/14 01:53:59 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/14 01:53:59 [INFO] preparing arguments for Azure ARM virtual network creation.
+2018/06/14 01:54:13 [INFO] preparing arguments for Azure ARM Subnet creation.
+2018/06/14 01:54:14 [INFO] preparing arguments for AzureRM Virtual Network Gateway creation.
+2018/06/14 01:54:19 [INFO] preparing arguments for Azure ARM Subnet creation.
+2018/06/14 01:54:29 [INFO] preparing arguments for AzureRM Virtual Network Gateway creation.
+2018/06/14 02:23:10 [INFO] preparing arguments for AzureRM Virtual Network Gateway Connection creation.
+2018/06/14 02:23:10 [INFO] preparing arguments for AzureRM Virtual Network Gateway Connection creation.
+2018/06/14 02:23:52 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:23:53 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:23:58 [INFO] terraform: building graph: GraphTypePlan
+2018/06/14 02:24:00 [WARN] Test: Executing destroy step
+2018/06/14 02:24:00 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/14 02:24:00 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:24:04 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:24:04 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_public_ip.test_1
+DESTROY: azurerm_public_ip.test_2
+DESTROY: azurerm_resource_group.test_1
+DESTROY: azurerm_resource_group.test_2
+DESTROY: azurerm_subnet.test_1
+DESTROY: azurerm_subnet.test_2
+DESTROY: azurerm_virtual_network.test_1
+DESTROY: azurerm_virtual_network.test_2
+DESTROY: azurerm_virtual_network_gateway.test_1
+DESTROY: azurerm_virtual_network_gateway.test_2
+DESTROY: azurerm_virtual_network_gateway_connection.test_1
+DESTROY: azurerm_virtual_network_gateway_connection.test_2
+
+STATE:
+
+azurerm_public_ip.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/publicIPAddresses/acctest-8560821667413972485
+  provider = provider.azurerm
+  ip_address = 23.101.71.224
+  location = westeurope
+  name = acctest-8560821667413972485
+  public_ip_address_allocation = dynamic
+  resource_group_name = acctestRG-8560821667413972485
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test_1
+azurerm_public_ip.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/publicIPAddresses/acctest-2986862988941732050
+  provider = provider.azurerm
+  ip_address = 40.112.170.62
+  location = westus
+  name = acctest-2986862988941732050
+  public_ip_address_allocation = dynamic
+  resource_group_name = acctestRG-2986862988941732050
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test_2
+azurerm_resource_group.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485
+  provider = provider.azurerm
+  location = westeurope
+  name = acctestRG-8560821667413972485
+  tags.% = 0
+azurerm_resource_group.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050
+  provider = provider.azurerm
+  location = westus
+  name = acctestRG-2986862988941732050
+  tags.% = 0
+azurerm_subnet.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworks/acctestvn-8560821667413972485/subnets/GatewaySubnet
+  provider = provider.azurerm
+  address_prefix = 10.0.1.0/24
+  ip_configurations.# = 1
+  ip_configurations.266319597 = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworkGateways/acctest-8560821667413972485/ipConfigurations/vnetGatewayConfig
+  name = GatewaySubnet
+  resource_group_name = acctestRG-8560821667413972485
+  service_endpoints.# = 0
+  virtual_network_name = acctestvn-8560821667413972485
+
+  Dependencies:
+    azurerm_resource_group.test_1
+    azurerm_virtual_network.test_1
+azurerm_subnet.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworks/acctest-2986862988941732050/subnets/GatewaySubnet
+  provider = provider.azurerm
+  address_prefix = 10.1.1.0/24
+  ip_configurations.# = 1
+  ip_configurations.1950567030 = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworkGateways/acctest-2986862988941732050/ipConfigurations/vnetGatewayConfig
+  name = GatewaySubnet
+  resource_group_name = acctestRG-2986862988941732050
+  service_endpoints.# = 0
+  virtual_network_name = acctest-2986862988941732050
+
+  Dependencies:
+    azurerm_resource_group.test_2
+    azurerm_virtual_network.test_2
+azurerm_virtual_network.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworks/acctestvn-8560821667413972485
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.0.0.0/16
+  dns_servers.# = 0
+  location = westeurope
+  name = acctestvn-8560821667413972485
+  resource_group_name = acctestRG-8560821667413972485
+  subnet.# = 1
+  subnet.2563334686.address_prefix = 10.0.1.0/24
+  subnet.2563334686.name = GatewaySubnet
+  subnet.2563334686.security_group = 
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test_1
+azurerm_virtual_network.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworks/acctest-2986862988941732050
+  provider = provider.azurerm
+  address_space.# = 1
+  address_space.0 = 10.1.0.0/16
+  dns_servers.# = 0
+  location = westus
+  name = acctest-2986862988941732050
+  resource_group_name = acctestRG-2986862988941732050
+  subnet.# = 1
+  subnet.1415799424.address_prefix = 10.1.1.0/24
+  subnet.1415799424.name = GatewaySubnet
+  subnet.1415799424.security_group = 
+  tags.% = 0
+
+  Dependencies:
+    azurerm_resource_group.test_2
+azurerm_virtual_network_gateway.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworkGateways/acctest-8560821667413972485
+  provider = provider.azurerm
+  active_active = false
+  bgp_settings.# = 1
+  bgp_settings.0.asn = 65515
+  bgp_settings.0.peer_weight = 0
+  bgp_settings.0.peering_address = 10.0.1.254
+  enable_bgp = false
+  ip_configuration.# = 1
+  ip_configuration.0.name = vnetGatewayConfig
+  ip_configuration.0.private_ip_address_allocation = Dynamic
+  ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/publicIPAddresses/acctest-8560821667413972485
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworks/acctestvn-8560821667413972485/subnets/GatewaySubnet
+  location = westeurope
+  name = acctest-8560821667413972485
+  resource_group_name = acctestRG-8560821667413972485
+  sku = Basic
+  tags.% = 0
+  type = Vpn
+  vpn_type = RouteBased
+
+  Dependencies:
+    azurerm_public_ip.test_1
+    azurerm_resource_group.test_1
+    azurerm_subnet.test_1
+azurerm_virtual_network_gateway.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworkGateways/acctest-2986862988941732050
+  provider = provider.azurerm
+  active_active = false
+  bgp_settings.# = 1
+  bgp_settings.0.asn = 65515
+  bgp_settings.0.peer_weight = 0
+  bgp_settings.0.peering_address = 10.1.1.254
+  enable_bgp = false
+  ip_configuration.# = 1
+  ip_configuration.0.name = vnetGatewayConfig
+  ip_configuration.0.private_ip_address_allocation = Dynamic
+  ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/publicIPAddresses/acctest-2986862988941732050
+  ip_configuration.0.subnet_id = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworks/acctest-2986862988941732050/subnets/GatewaySubnet
+  location = westus
+  name = acctest-2986862988941732050
+  resource_group_name = acctestRG-2986862988941732050
+  sku = Basic
+  tags.% = 0
+  type = Vpn
+  vpn_type = RouteBased
+
+  Dependencies:
+    azurerm_public_ip.test_2
+    azurerm_resource_group.test_2
+    azurerm_subnet.test_2
+azurerm_virtual_network_gateway_connection.test_1:
+  ID = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/connections/acctest-8560821667413972485
+  provider = provider.azurerm
+  enable_bgp = false
+  ipsec_policy.# = 0
+  location = westeurope
+  name = acctest-8560821667413972485
+  peer_virtual_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworkGateways/acctest-2986862988941732050
+  resource_group_name = acctestRG-8560821667413972485
+  routing_weight = 0
+  shared_key = 4-v3ry-53cr37-1p53c-5h4r3d-k3y
+  tags.% = 0
+  type = Vnet2Vnet
+  use_policy_based_traffic_selectors = false
+  virtual_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworkGateways/acctest-8560821667413972485
+
+  Dependencies:
+    azurerm_resource_group.test_1
+    azurerm_virtual_network_gateway.test_1
+    azurerm_virtual_network_gateway.test_2
+azurerm_virtual_network_gateway_connection.test_2:
+  ID = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/connections/acctest-2986862988941732050
+  provider = provider.azurerm
+  enable_bgp = false
+  ipsec_policy.# = 0
+  location = westus
+  name = acctest-2986862988941732050
+  peer_virtual_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-8560821667413972485/providers/Microsoft.Network/virtualNetworkGateways/acctest-8560821667413972485
+  resource_group_name = acctestRG-2986862988941732050
+  routing_weight = 0
+  shared_key = 4-v3ry-53cr37-1p53c-5h4r3d-k3y
+  tags.% = 0
+  type = Vnet2Vnet
+  use_policy_based_traffic_selectors = false
+  virtual_network_gateway_id = /subscriptions/****/resourceGroups/acctestRG-2986862988941732050/providers/Microsoft.Network/virtualNetworkGateways/acctest-2986862988941732050
+
+  Dependencies:
+    azurerm_resource_group.test_2
+    azurerm_virtual_network_gateway.test_1
+    azurerm_virtual_network_gateway.test_2
+2018/06/14 02:24:04 [INFO] terraform: building graph: GraphTypeApply
+2018/06/14 02:33:51 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/14 02:33:51 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/14 02:33:51 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- PASS: TestAccAzureRMVirtualNetworkGatewayConnection_vnettonet (2397.80s)
+PASS
+=== RUN   TestAccDataSourceAzureRMBuiltInRoleDefinition_contributor
+2018/06/13 05:00:56 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:00:56 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:00:59 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:01:00 [WARN] Test: Step plan: DIFF:
+
+
+
+STATE:
+
+data.azurerm_builtin_role_definition.test:
+  ID = /providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c
+  provider = provider.azurerm
+  assignable_scopes.# = 1
+  assignable_scopes.0 = /
+  description = Lets you manage everything except access to resources.
+  name = Contributor
+  permissions.# = 1
+  permissions.0.actions.# = 1
+  permissions.0.actions.0 = *
+  permissions.0.not_actions.# = 5
+  permissions.0.not_actions.0 = Microsoft.Authorization/*/Delete
+  permissions.0.not_actions.1 = Microsoft.Authorization/*/Write
+  permissions.0.not_actions.2 = Microsoft.Authorization/elevateAccess/Action
+  permissions.0.not_actions.3 = Microsoft.Blueprint/blueprintAssignments/write
+  permissions.0.not_actions.4 = Microsoft.Blueprint/blueprintAssignments/delete
+  type = BuiltInRole
+2018/06/13 05:01:00 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:01:00 [WARN] Test: Executing destroy step
+2018/06/13 05:01:00 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:01:00 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:01:01 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/13 05:01:01 [WARN] Test: Step plan: DIFF:
+
+DESTROY: data.azurerm_builtin_role_definition.test
+
+STATE:
+
+data.azurerm_builtin_role_definition.test:
+  ID = /providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c
+  provider = provider.azurerm
+  assignable_scopes.# = 1
+  assignable_scopes.0 = /
+  description = Lets you manage everything except access to resources.
+  name = Contributor
+  permissions.# = 1
+  permissions.0.actions.# = 1
+  permissions.0.actions.0 = *
+  permissions.0.not_actions.# = 5
+  permissions.0.not_actions.0 = Microsoft.Authorization/*/Delete
+  permissions.0.not_actions.1 = Microsoft.Authorization/*/Write
+  permissions.0.not_actions.2 = Microsoft.Authorization/elevateAccess/Action
+  permissions.0.not_actions.3 = Microsoft.Blueprint/blueprintAssignments/write
+  permissions.0.not_actions.4 = Microsoft.Blueprint/blueprintAssignments/delete
+  type = BuiltInRole
+2018/06/13 05:01:01 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:01:02 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/13 05:01:02 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:01:04 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- FAIL: TestAccDataSourceAzureRMBuiltInRoleDefinition_contributor (7.46s)
+	testing.go:513: Step 0 error: Check failed: Check 7/10 error: data.azurerm_builtin_role_definition.test: Attribute 'permissions.0.not_actions.#' expected "3", got "5"
+FAIL
+exit status 1
+=== RUN   TestAccAzureRMLoadBalancer_frontEndConfig
+2018/06/13 05:53:50 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:53:50 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:53:50 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:53:52 [WARN] Test: Step plan: DIFF:
+
+CREATE: azurerm_lb.test
+  frontend_ip_configuration.#:                       "" => "2"
+  frontend_ip_configuration.0.inbound_nat_rules.#:   "" => "<computed>"
+  frontend_ip_configuration.0.load_balancer_rules.#: "" => "<computed>"
+  frontend_ip_configuration.0.name:                  "" => "one-359859934751146466"
+  frontend_ip_configuration.0.private_ip_address:    "" => "<computed>"
+  frontend_ip_configuration.0.public_ip_address_id:  "" => "<computed>"
+  frontend_ip_configuration.0.subnet_id:             "" => "<computed>"
+  frontend_ip_configuration.1.inbound_nat_rules.#:   "" => "<computed>"
+  frontend_ip_configuration.1.load_balancer_rules.#: "" => "<computed>"
+  frontend_ip_configuration.1.name:                  "" => "two-359859934751146466"
+  frontend_ip_configuration.1.private_ip_address:    "" => "<computed>"
+  frontend_ip_configuration.1.public_ip_address_id:  "" => "<computed>"
+  frontend_ip_configuration.1.subnet_id:             "" => "<computed>"
+  location:                                          "" => "westus" (forces new resource)
+  name:                                              "" => "arm-test-loadbalancer-359859934751146466" (forces new resource)
+  private_ip_address:                                "" => "<computed>"
+  private_ip_addresses.#:                            "" => "<computed>"
+  resource_group_name:                               "" => "acctestrg-359859934751146466" (forces new resource)
+  sku:                                               "" => "Basic" (forces new resource)
+  tags.%:                                            "" => "<computed>"
+CREATE: azurerm_public_ip.test
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westus" (forces new resource)
+  name:                         "" => "test-ip-359859934751146466" (forces new resource)
+  public_ip_address_allocation: "" => "static"
+  resource_group_name:          "" => "acctestrg-359859934751146466" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_public_ip.test1
+  fqdn:                         "" => "<computed>"
+  ip_address:                   "" => "<computed>"
+  location:                     "" => "westus" (forces new resource)
+  name:                         "" => "another-test-ip-359859934751146466" (forces new resource)
+  public_ip_address_allocation: "" => "static"
+  resource_group_name:          "" => "acctestrg-359859934751146466" (forces new resource)
+  sku:                          "" => "Basic" (forces new resource)
+  tags.%:                       "" => "<computed>"
+CREATE: azurerm_resource_group.test
+  location: "" => "westus" (forces new resource)
+  name:     "" => "acctestrg-359859934751146466" (forces new resource)
+  tags.%:   "" => "<computed>"
+
+STATE:
+
+<no state>
+2018/06/13 05:53:52 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:53:54 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/13 05:53:54 [INFO] preparing arguments for AzureRM Public IP creation.
+2018/06/13 05:54:06 [INFO] preparing arguments for Azure ARM LoadBalancer creation.
+2018/06/13 05:54:07 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:09 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:10 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:11 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:54:11 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:13 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:14 [WARN] Test: Step plan: DIFF:
+
+UPDATE: azurerm_lb.test
+  frontend_ip_configuration.#:      "2" => "1"
+  frontend_ip_configuration.1.name: "two-359859934751146466" => ""
+
+STATE:
+
+azurerm_lb.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/loadBalancers/arm-test-loadbalancer-359859934751146466
+  provider = provider.azurerm
+  frontend_ip_configuration.# = 2
+  frontend_ip_configuration.0.inbound_nat_rules.# = 0
+  frontend_ip_configuration.0.load_balancer_rules.# = 0
+  frontend_ip_configuration.0.name = one-359859934751146466
+  frontend_ip_configuration.0.private_ip_address = 
+  frontend_ip_configuration.0.private_ip_address_allocation = Dynamic
+  frontend_ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  frontend_ip_configuration.0.subnet_id = 
+  frontend_ip_configuration.0.zones.# = 0
+  frontend_ip_configuration.1.inbound_nat_rules.# = 0
+  frontend_ip_configuration.1.load_balancer_rules.# = 0
+  frontend_ip_configuration.1.name = two-359859934751146466
+  frontend_ip_configuration.1.private_ip_address = 
+  frontend_ip_configuration.1.private_ip_address_allocation = Dynamic
+  frontend_ip_configuration.1.public_ip_address_id = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/another-test-ip-359859934751146466
+  frontend_ip_configuration.1.subnet_id = 
+  frontend_ip_configuration.1.zones.# = 0
+  location = westus
+  name = arm-test-loadbalancer-359859934751146466
+  private_ip_address = 
+  private_ip_addresses.# = 0
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+
+  Dependencies:
+    azurerm_public_ip.test
+    azurerm_public_ip.test1
+    azurerm_resource_group.test
+azurerm_public_ip.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  provider = provider.azurerm
+  ip_address = 104.42.117.107
+  location = westus
+  name = test-ip-359859934751146466
+  public_ip_address_allocation = static
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_public_ip.test1:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/another-test-ip-359859934751146466
+  provider = provider.azurerm
+  ip_address = 104.42.158.47
+  location = westus
+  name = another-test-ip-359859934751146466
+  public_ip_address_allocation = static
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466
+  provider = provider.azurerm
+  location = westus
+  name = acctestrg-359859934751146466
+  tags.% = 0
+2018/06/13 05:54:14 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:54:15 [INFO] preparing arguments for Azure ARM LoadBalancer creation.
+2018/06/13 05:54:16 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:17 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:19 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:20 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:54:20 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:22 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:23 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_public_ip.test1
+
+STATE:
+
+azurerm_lb.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/loadBalancers/arm-test-loadbalancer-359859934751146466
+  provider = provider.azurerm
+  frontend_ip_configuration.# = 1
+  frontend_ip_configuration.0.inbound_nat_rules.# = 0
+  frontend_ip_configuration.0.load_balancer_rules.# = 0
+  frontend_ip_configuration.0.name = one-359859934751146466
+  frontend_ip_configuration.0.private_ip_address = 
+  frontend_ip_configuration.0.private_ip_address_allocation = Dynamic
+  frontend_ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  frontend_ip_configuration.0.subnet_id = 
+  frontend_ip_configuration.0.zones.# = 0
+  location = westus
+  name = arm-test-loadbalancer-359859934751146466
+  private_ip_address = 
+  private_ip_addresses.# = 0
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+
+  Dependencies:
+    azurerm_public_ip.test
+    azurerm_resource_group.test
+azurerm_public_ip.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  provider = provider.azurerm
+  ip_address = 104.42.117.107
+  location = westus
+  name = test-ip-359859934751146466
+  public_ip_address_allocation = static
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_public_ip.test1:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/another-test-ip-359859934751146466
+  provider = provider.azurerm
+  ip_address = 104.42.158.47
+  location = westus
+  name = another-test-ip-359859934751146466
+  public_ip_address_allocation = static
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466
+  provider = provider.azurerm
+  location = westus
+  name = acctestrg-359859934751146466
+  tags.% = 0
+2018/06/13 05:54:23 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:54:35 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:36 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:37 [INFO] terraform: building graph: GraphTypePlan
+2018/06/13 05:54:38 [WARN] Test: Executing destroy step
+2018/06/13 05:54:38 [INFO] terraform: building graph: GraphTypeValidate
+2018/06/13 05:54:38 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:54:40 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/13 05:54:40 [WARN] Test: Step plan: DIFF:
+
+DESTROY: azurerm_lb.test
+DESTROY: azurerm_public_ip.test
+DESTROY: azurerm_resource_group.test
+
+STATE:
+
+azurerm_lb.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/loadBalancers/arm-test-loadbalancer-359859934751146466
+  provider = provider.azurerm
+  frontend_ip_configuration.# = 1
+  frontend_ip_configuration.0.inbound_nat_rules.# = 0
+  frontend_ip_configuration.0.load_balancer_rules.# = 0
+  frontend_ip_configuration.0.name = one-359859934751146466
+  frontend_ip_configuration.0.private_ip_address = 
+  frontend_ip_configuration.0.private_ip_address_allocation = Dynamic
+  frontend_ip_configuration.0.public_ip_address_id = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  frontend_ip_configuration.0.subnet_id = 
+  frontend_ip_configuration.0.zones.# = 0
+  location = westus
+  name = arm-test-loadbalancer-359859934751146466
+  private_ip_address = 
+  private_ip_addresses.# = 0
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+
+  Dependencies:
+    azurerm_public_ip.test
+    azurerm_resource_group.test
+azurerm_public_ip.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466/providers/Microsoft.Network/publicIPAddresses/test-ip-359859934751146466
+  provider = provider.azurerm
+  ip_address = 104.42.117.107
+  location = westus
+  name = test-ip-359859934751146466
+  public_ip_address_allocation = static
+  resource_group_name = acctestrg-359859934751146466
+  sku = Basic
+  tags.% = 0
+  zones.# = 0
+
+  Dependencies:
+    azurerm_resource_group.test
+azurerm_resource_group.test:
+  ID = /subscriptions/****/resourceGroups/acctestrg-359859934751146466
+  provider = provider.azurerm
+  location = westus
+  name = acctestrg-359859934751146466
+  tags.% = 0
+2018/06/13 05:54:40 [INFO] terraform: building graph: GraphTypeApply
+2018/06/13 05:55:38 [INFO] terraform: building graph: GraphTypePlanDestroy
+2018/06/13 05:55:38 [INFO] terraform: building graph: GraphTypeRefresh
+2018/06/13 05:55:38 [INFO] terraform: building graph: GraphTypePlanDestroy
+--- PASS: TestAccAzureRMLoadBalancer_frontEndConfig (107.97s)
+PASS
